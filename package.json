@@ -2,9 +2,10 @@
   "name": "react-3d-carousel",
   "version": "0.0.6",
   "description": "A 3D carousel written in react",
-  "main": "js/Carousel.js",
+  "main": "src/Carousel.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "babel ./src --out-dir ./js"
   },
   "keywords": [
     "carousel",
@@ -12,10 +13,10 @@
     "react-component"
   ],
   "dependencies": {
-    "ease-functions": "0.0.1"
-  },
-  "peerDependencies": {
-    "react": ">=0.13.x < 1.0.0"
+    "babel-preset-react": "^6.24.1",
+    "ease-functions": "0.0.1",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0"
   },
   "prepublish": "babel ./src --out-dir ./js",
   "author": "Slobodan Blazeski <slobodan.blazeski@gmail.com>",
@@ -25,8 +26,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "babel": "^5.3.1",
-    "babel-core": "^5.3.1",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
     "chai": "^2.3.0",
     "mocha": "^2.2.4"
   }

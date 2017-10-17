@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _exports = module.exports = {};
 
 _exports.figureStyle = function figureStyle(d) {
@@ -26,10 +28,10 @@ _exports.range = function range(from, to) {
 };
 
 _exports.uniq = function uniq(a) {
-    var prims = { 'boolean': {}, 'number': {}, 'string': {} },
+    var prims = { "boolean": {}, "number": {}, "string": {} },
         objs = [];
     return a.filter(function (item) {
-        var type = typeof item;
+        var type = typeof item === 'undefined' ? 'undefined' : _typeof(item);
         if (type in prims) return prims[type].hasOwnProperty(item) ? false : prims[type][item] = true;else return objs.indexOf(item) >= 0 ? false : objs.push(item);
     });
 };

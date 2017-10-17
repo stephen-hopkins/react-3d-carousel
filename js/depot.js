@@ -1,136 +1,183 @@
 'use strict';
 
-var Ease = require('ease-functions');
-var Layout = require('./layout');
-var Util = require('./util');
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-module.exports = function depot(initialState, initialProps, callback) {
-    var res = {};
-    var state = initialState;
-    var props = initialProps;
-    var requestID;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    res.onNextProps = function onNextProps(nextProps) {
-        if (props.layout != nextProps.layout || props.images != nextProps.images) {
-            props = nextProps;
-            var to = Layout[props.layout].figures(props.width, props.images, state.rotationY);
-            var bounds = transitionFigures(state.figures, to, Ease[props.ease], props.duration);
-            var stepper = transit(bounds, to, props.duration);
-            playAnimation(state, to, stepper, callback);
-        }
-        props = nextProps;
-    };
-    res.onRotate = function (angle) {
-        var to = Layout[props.layout].figures(props.width, props.images, state.rotationY + angle);
-        state.rotationY += angle;
-        var bounds = transitionFigures(state.figures, to, Ease[props.ease], props.duration);
-        var stepper = transit(bounds, to, props.duration);
-        if (requestID) {
-            cancelAnimationFrame(requestID);
-        }
-        playAnimation(state, to, stepper, callback);
-    };
-    function playAnimation(state, to, stepper, callback) {
-        if (requestID) window.cancelAnimationFrame(requestID);
-        function animate(timestamp) {
-            requestID = requestAnimationFrame(animate);
-            state.figures = stepper(timestamp);
-            callback(state);
-            if (state.figures == to) {
-                cancelAnimationFrame(requestID);
+var _easeFunctions = require('ease-functions');
+
+var _easeFunctions2 = _interopRequireDefault(_easeFunctions);
+
+var _layout = require('./layout');
+
+var _layout2 = _interopRequireDefault(_layout);
+
+var _util = require('./util');
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Depot = function () {
+    function Depot(initialState, initialProps, callback) {
+        _classCallCheck(this, Depot);
+
+        this.state = initialState;
+        this.props = initialProps;
+        this.callbackSetState = callback;
+        this.requestID = false;
+    }
+
+    _createClass(Depot, [{
+        key: 'onNextProps',
+        value: function onNextProps(nextProps) {
+            if (this.props.layout != nextProps.layout || this.props.images != nextProps.images) {
+                this.props = nextProps;
+                var to = _layout2.default[this.props.layout].figures(this.props.width, this.props.images, this.state.rotationY);
+                var bounds = this.transitionFigures(this.state.figures, to, _easeFunctions2.default[this.props.ease], this.props.duration);
+                var stepper = transit(bounds, to, this.props.duration);
+                this.playAnimation(this.state, to, stepper, callbackSetState);
             }
+            this.props = nextProps;
         }
-        requestAnimationFrame(animate);
-    }
-    return res;
-};
-
-function transitionFigures(from, to, ease) {
-    var keys = Util.uniq(Util.pluck('key', from.concat(to)));
-    var fromTo = [];
-    keys.forEach(function (key) {
-        fromTo.push(transfigure(startFrame(from[key], to[key]), endFrame(from[key], to[key]), ease));
-    });
-    return fromTo;
-}
-
-function transit(entries, to, duration) {
-    var start, end;
-    var withChange = addChange(entries);
-    var time = 0;
-    return function step(timestamp) {
-        if (!start) {
-            start = timestamp;
-            end = timestamp + duration;
+    }, {
+        key: 'onRotate',
+        value: function onRotate(angle) {
+            var to = _layout2.default[this.props.layout].figures(this.props.width, this.props.images, this.state.rotationY + angle);
+            this.state.rotationY += angle;
+            var bounds = this.transitionFigures(this.state.figures, to, _easeFunctions2.default[this.props.ease], this.props.duration);
+            var stepper = transit(bounds, to, this.props.duration);
+            if (this.requestID) {
+                cancelAnimationFrame(this.requestID);
+            }
+            this.playAnimation(this.state, to, stepper, this.callbackSetState);
         }
-        if (timestamp >= end) {
-            return to;
+    }, {
+        key: 'playAnimation',
+        value: function playAnimation(state, to, stepper, callback) {
+            if (this.requestID) window.cancelAnimationFrame(this.requestID);
+            function animate(timestamp) {
+                this.requestID = requestAnimationFrame(animate);
+                state.figures = stepper(timestamp);
+                callback(state);
+                if (state.figures == to) {
+                    cancelAnimationFrame(this.requestID);
+                }
+            }
+            requestAnimationFrame(animate);
         }
-        time = timestamp - start;
-        return tally(time, withChange, duration);
-    };
-}
 
-function transfigure(from, to, ease) {
-    var keys = Util.uniq(Object.keys(from || {}).concat(Object.keys(to || {})));
-    var res = {};
-    keys.forEach(function (key) {
-        res[key] = {
-            from: from[key],
-            to: to[key]
-        };
-        res[key].ease = isNaN(res[key].from) ? secondArg : ease;
-    });
-    return res;
-}
+        // NOT USING THIS
 
-function addChange(entries) {
-    var len = entries.length;
-    var res = new Array(len);
-    for (var i = 0; i < len; ++i) {
-        res[i] = addObjChange(entries[i]);
-    }
-    return res;
-}
-
-function addObjChange(entry) {
-    var res = Object.create(null);
-    for (var key in entry) {
-        res[key] = Util.merge(entry[key], { change: entry[key].to - entry[key].from });
-    }
-    return res;
-}
-
-function tally(time, entries, duration) {
-    var len = entries.length;
-    var res = new Array(len);
-    var entry;
-    for (var i = 0; i < len; ++i) {
-        entry = entries[i];
-        var obj = Object.create(null);
-        for (var key in entry) {
-            obj[key] = entry[key].ease ? entry[key].ease(time, entry[key].from, entry[key].change, duration) : entry[key].from;
+    }, {
+        key: 'transitionFigures',
+        value: function transitionFigures(from, to, ease) {
+            var keys = _util2.default.uniq(_util2.default.pluck('key', from.concat(to)));
+            var fromTo = [];
+            keys.forEach(function (key) {
+                fromTo.push(this.transfigure(this.startFrame(from[key], to[key]), this.endFrame(from[key], to[key]), ease));
+            });
+            return fromTo;
         }
-        res[i] = obj;
-    }
-    return res;
-}
+    }, {
+        key: 'transit',
+        value: function transit(entries, to, duration) {
+            var start, end;
+            var withChange = this.addChange(entries);
+            var time = 0;
+            return function step(timestamp) {
+                if (!start) {
+                    start = timestamp;
+                    end = timestamp + duration;
+                }
+                if (timestamp >= end) {
+                    return to;
+                }
+                time = timestamp - start;
+                return this.tally(time, withChange, duration);
+            };
+        }
+    }, {
+        key: 'transfigure',
+        value: function transfigure(from, to, ease) {
+            var keys = _util2.default.uniq(Object.keys(from || {}).concat(Object.keys(to || {})));
+            var res = {};
+            keys.forEach(function (key) {
+                res[key] = {
+                    from: from[key],
+                    to: to[key]
+                };
+                res[key].ease = isNaN(res[key].from) ? this.secondArg : ease;
+            });
+            return res;
+        }
+    }, {
+        key: 'addChange',
+        value: function addChange(entries) {
+            var len = entries.length;
+            var res = new Array(len);
+            for (var i = 0; i < len; ++i) {
+                res[i] = this.addObjChange(entries[i]);
+            }
+            return res;
+        }
+    }, {
+        key: 'addObjChange',
+        value: function addObjChange(entry) {
+            var res = Object.create(null);
+            for (var key in entry) {
+                res[key] = _util2.default.merge(entry[key], {
+                    change: entry[key].to - entry[key].from
+                });
+            }
+            return res;
+        }
+    }, {
+        key: 'tally',
+        value: function tally(time, entries, duration) {
+            var len = entries.length;
+            var res = new Array(len);
+            var entry;
+            for (var i = 0; i < len; ++i) {
+                entry = entries[i];
+                var obj = Object.create(null);
+                for (var key in entry) {
+                    obj[key] = entry[key].ease ? entry[key].ease(time, entry[key].from, entry[key].change, duration) : entry[key].from;
+                }
+                res[i] = obj;
+            }
+            return res;
+        }
+    }, {
+        key: 'secondArg',
+        value: function secondArg(x, y) {
+            return y;
+        }
+    }, {
+        key: 'present',
+        value: function present(entries) {
+            return entries.filter(function (entry) {
+                return entry.present;
+            });
+        }
+    }, {
+        key: 'startFrame',
+        value: function startFrame(now, then) {
+            return now || _util2.default.merge(then, { present: true, opacity: 0 });
+        }
+    }, {
+        key: 'endFrame',
+        value: function endFrame(now, then) {
+            return now && !then ? _util2.default.merge(now, { present: false, opacity: 0 }) // leaves
+            : _util2.default.merge(then, { present: true, opacity: 1 });
+        }
+    }]);
 
-var secondArg = function secondArg(x, y) {
-    return y;
-};
+    return Depot;
+}();
 
-var present = function present(entries) {
-    return entries.filter(function (entry) {
-        return entry.present;
-    });
-};
-
-function startFrame(now, then) {
-    return now || Util.merge(then, { present: true, opacity: 0 });
-}
-
-function endFrame(now, then) {
-    return now && !then ? Util.merge(now, { present: false, opacity: 0 }) // leaves
-    : Util.merge(then, { present: true, opacity: 1 });
-}
+exports.default = Depot;
