@@ -4,11 +4,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _exports = module.exports = {};
 
-_exports.figureStyle = function figureStyle(d) {
+_exports.figureStyle = function figureStyle(d, width, height) {
     var translateX = Object.hasOwnProperty.call(d, 'translateX') ? d.translateX : 0;
     return {
         transform: 'rotateY(' + d.rotateY + 'rad) ' + ' translateX(' + translateX + 'px)' + ' translateZ(' + d.translateZ + 'px)',
-        opacity: d.opacity
+        opacity: d.opacity,
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: width,
+        height: height
     };
 };
 
@@ -28,7 +33,7 @@ _exports.range = function range(from, to) {
 };
 
 _exports.uniq = function uniq(a) {
-    var prims = { "boolean": {}, "number": {}, "string": {} },
+    var prims = { boolean: {}, number: {}, string: {} },
         objs = [];
     return a.filter(function (item) {
         var type = typeof item === 'undefined' ? 'undefined' : _typeof(item);

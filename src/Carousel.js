@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom';
 import Util from './util';
 import Layout from './layout';
 import Depot from './depot';
+import circleLeft from '../static/icons/chevron-circle-left_white.png';
+import circleRight from '../static/icons/chevron-circle-right_white.png';
+import blackLeft from '../static/icons/chevron-left_black.png';
+import blackRight from '../static/icons/chevron-right_black.png';
+import whiteLeft from '../static/icons/chevron-left_white.png';
+import whiteRight from '../static/icons/chevron-circle-right_white.png';
 
 //import "./index.css";
 
@@ -21,7 +27,11 @@ export default class Carousel extends React.Component {
     }
 
     componentWillMount() {
-        this.depot = Depot(this.state, this.props, this.setState.bind(this));
+        this.depot = new Depot(
+            this.state,
+            this.props,
+            this.setState.bind(this)
+        );
         this.onRotate = this.depot.onRotate.bind(this);
     }
 
@@ -29,35 +39,98 @@ export default class Carousel extends React.Component {
         this.depot.onNextProps(nextProps);
     }
 
+    getNavStyle(type) {
+        const navStyle = {
+            position: 'absolute',
+            height: '100%',
+            width: '15%'
+        };
+        switch (type) {
+        case 'prev':
+            return navStyle;
+        case 'next':
+            return { ...navStyle, right: '-5px' };
+        default:
+            throw new Error('Invalid type passed into getNavStyle');
+        }
+    }
+
+    getNavImage(type) {
+        let images;
+        switch (this.props.navType) {
+        case 'circle':
+            images = [circleLeft, circleRight];
+            break;
+        case 'black':
+            images = [blackLeft, blackRight];
+            break;
+        case 'white':
+            images = [whiteLeft, whiteRight];
+            break;
+        default:
+            throw new Error('Invalid navType passed into Carousel');
+        }
+
+        switch (type) {
+        case 'prev':
+            return images[0];
+        case 'next':
+            return images[1];
+        default:
+            throw new Error('Invalid type passed into getNavImage');
+        }
+    }
+
     render() {
         var angle = 2 * Math.PI / this.state.figures.length;
+        const width = this.props.width;
+        const height = this.props.height;
+
         var translateZ = -Layout[this.props.layout].distance(
             this.props.width,
             this.state.figures.length
         );
         var figures = this.state.figures.map(function(d, i) {
             return (
-                <figure key={i} style={Util.figureStyle(d)}>
+                <figure key={i} style={Util.figureStyle(d, width, height)}>
                     <img src={d.image} alt={i} height={'100%'} width={'100%'} />
                 </figure>
             );
         });
+
         return (
-            <section className="react-3d-carousel">
+            <section
+                className="react-3d-carousel"
+                style={{
+                    perspective: '1000px',
+                    height: this.props.height,
+                    width: this.props.width
+                }}
+            >
                 <div
                     className="carousel"
-                    style={{ transform: 'translateZ(' + translateZ + 'px)' }}
+                    style={{
+                        transform: 'translateZ(' + translateZ + 'px)',
+                        transformStyle: 'preserve-3d',
+                        height: this.props.height,
+                        width: this.props.width
+                    }}
                 >
                     {figures}
                 </div>
+                <img src={this.getNavImage('prev')} />
                 <div
+                    style={this.getNavStyle('prev')}
                     className="prev"
                     onClick={Util.partial(this.onRotate, +angle)}
                 />
                 <div
+                    style={this.getNavStyle('next')}
                     className="next"
                     onClick={Util.partial(this.onRotate, -angle)}
-                />
+                >
+                    <img src={this.getNavImage('next')} />
+                </div>
             </section>
         );
     }

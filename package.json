@@ -2,7 +2,7 @@
   "name": "react-3d-carousel",
   "version": "0.0.6",
   "description": "A 3D carousel written in react",
-  "main": "src/Carousel.js",
+  "main": "js/Carousel.js",
   "scripts": {
     "test": "mocha",
     "build": "babel ./src --out-dir ./js"
@@ -13,6 +13,7 @@
     "react-component"
   ],
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-react": "^6.24.1",
     "ease-functions": "0.0.1",
     "react": "^16.0.0",

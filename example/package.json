@@ -13,8 +13,10 @@
     "3D"
   ],
   "dependencies": {
-    "react": "^0.13.x",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "ease-functions": "*",
+    "react": "^0.13.x",
     "react-3d-carousel": "*"
   },
   "peerDependencies": {
@@ -27,9 +29,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^5.2.17",
-    "babel-loader": "^5.0.0",
-    "webpack": "^1.8.11",
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "webpack": "^1.15.0",
     "webpack-dev-server": "^1.8.2"
   }
 }
