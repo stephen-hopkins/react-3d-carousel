@@ -20,7 +20,8 @@ exports.figureStyle = function figureStyle(d, width, height) {
         left: 0,
         top: 0,
         width: width,
-        height: height
+        height: height,
+        margin: 0
     };
 };
 
