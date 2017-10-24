@@ -145,7 +145,7 @@ var Carousel = function (_React$Component) {
         return _react2.default.createElement(
           "figure",
           { key: i, style: _util2.default.figureStyle(d, width, height) },
-          _react2.default.createElement("img", { src: d.image, alt: i, height: "100%", width: "100%" })
+          _react2.default.createElement("img", { src: d.image, alt: i, height: "100%", width: "70%" })
         );
       });
 
