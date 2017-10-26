@@ -8,6 +8,7 @@ export default class Depot {
     this.props = initialProps;
     this.callbackSetState = callback;
     this.requestID = false;
+    this.current = 0;
 
     this.onNextProps = this.onNextProps.bind(this);
     this.onRotate = this.onRotate.bind(this);
@@ -37,6 +38,14 @@ export default class Depot {
   }
 
   onRotate(angle) {
+    const imagesLen = this.state.figures.length;
+    if (angle > 0) {
+      this.current = (--this.current + imagesLen) % imagesLen;
+    } else {
+      this.current = ++this.current % imagesLen;
+    }
+    this.props.onRotate(this.current);
+
     var to = Layout[this.props.layout].figures(
       this.props.width,
       this.props.images,

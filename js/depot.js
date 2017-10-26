@@ -30,6 +30,7 @@ var Depot = function () {
     this.props = initialProps;
     this.callbackSetState = callback;
     this.requestID = false;
+    this.current = 0;
 
     this.onNextProps = this.onNextProps.bind(this);
     this.onRotate = this.onRotate.bind(this);
@@ -50,6 +51,14 @@ var Depot = function () {
   }, {
     key: "onRotate",
     value: function onRotate(angle) {
+      var imagesLen = this.state.figures.length;
+      if (angle > 0) {
+        this.current = (--this.current + imagesLen) % imagesLen;
+      } else {
+        this.current = ++this.current % imagesLen;
+      }
+      this.props.onRotate(this.current);
+
       var to = _layout2.default[this.props.layout].figures(this.props.width, this.props.images, this.state.rotationY + angle);
       this.state.rotationY += angle;
       var bounds = this.transitionFigures(this.state.figures, to, _easeFunctions2.default[this.props.ease], this.props.duration);
