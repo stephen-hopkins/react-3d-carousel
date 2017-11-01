@@ -57,7 +57,6 @@ var Depot = function () {
       } else {
         this.current = ++this.current % imagesLen;
       }
-      this.props.onRotate(this.current);
 
       var to = _layout2.default[this.props.layout].figures(this.props.width, this.props.images, this.state.rotationY + angle);
       this.state.rotationY += angle;

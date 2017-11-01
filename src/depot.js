@@ -44,7 +44,6 @@ export default class Depot {
     } else {
       this.current = ++this.current % imagesLen;
     }
-    this.props.onRotate(this.current);
 
     var to = Layout[this.props.layout].figures(
       this.props.width,

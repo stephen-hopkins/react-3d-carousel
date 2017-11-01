@@ -82,7 +82,7 @@ export default class Carousel extends React.Component {
   }
 
   render() {
-    var angle = 2 * Math.PI / this.state.figures.length;
+    const angle = 2 * Math.PI / this.state.figures.length;
     const width = this.props.width;
     const height = this.props.height;
 
@@ -93,10 +93,16 @@ export default class Carousel extends React.Component {
     var figures = this.state.figures.map(function(d, i) {
       return (
         <figure key={i} style={Util.figureStyle(d, width, height)}>
-          <img src={d.image} alt={i} height={"100%"} width={"70%"} />
+          <img
+            src={d.image}
+            alt={i}
+            style={{ maxHeight: "100%", maxWidth: "70%", margin: "auto" }}
+          />
         </figure>
       );
     });
+
+    this.props.onRotate(figures[this.depot.current]);
 
     return (
       <section className="react-3d-carousel" style={this.props.style}>
@@ -106,7 +112,8 @@ export default class Carousel extends React.Component {
             transform: "translateZ(" + translateZ + "px)",
             transformStyle: "preserve-3d",
             height: this.props.height,
-            width: this.props.width
+            width: this.props.width,
+            backfaceVisibility: "inherit"
           }}
         >
           {figures}

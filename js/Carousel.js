@@ -145,9 +145,15 @@ var Carousel = function (_React$Component) {
         return _react2.default.createElement(
           "figure",
           { key: i, style: _util2.default.figureStyle(d, width, height) },
-          _react2.default.createElement("img", { src: d.image, alt: i, height: "100%", width: "70%" })
+          _react2.default.createElement("img", {
+            src: d.image,
+            alt: i,
+            style: { maxHeight: "100%", maxWidth: "70%", margin: "auto" }
+          })
         );
       });
+
+      this.props.onRotate(figures[this.depot.current]);
 
       return _react2.default.createElement(
         "section",
@@ -160,7 +166,8 @@ var Carousel = function (_React$Component) {
               transform: "translateZ(" + translateZ + "px)",
               transformStyle: "preserve-3d",
               height: this.props.height,
-              width: this.props.width
+              width: this.props.width,
+              backfaceVisibility: "inherit"
             }
           },
           figures
