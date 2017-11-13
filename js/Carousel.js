@@ -153,7 +153,7 @@ var Carousel = function (_React$Component) {
         );
       });
 
-      this.props.onRotate(figures[this.depot.current]);
+      this.props.onRotate(this.props.images[this.depot.current]);
 
       return _react2.default.createElement(
         "section",

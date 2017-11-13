@@ -102,7 +102,7 @@ export default class Carousel extends React.Component {
       );
     });
 
-    this.props.onRotate(figures[this.depot.current]);
+    this.props.onRotate(this.props.images[this.depot.current]);
 
     return (
       <section className="react-3d-carousel" style={this.props.style}>
